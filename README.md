@@ -1,6 +1,6 @@
 # RPCSwitch
 
-# matic-metamask-plugin
+## matic-metamask-plugin
 
 A MetaMask plugin for switching RPC.Currently only works in the [MetaMask Plugin Beta](https://github.com/MetaMask/metamask-snaps-beta). More information can be found in the [wiki](https://github.com/MetaMask/metamask-snaps-beta/wiki).
 
@@ -13,3 +13,8 @@ A MetaMask plugin for switching RPC.Currently only works in the [MetaMask Plugin
 - Run `mm-snap build` and then `mm-snap serve`
 - Browse to `localhost:7778` in the browser you installed the MetaMask Beta in
 - Follow the intstructions given on the website
+
+### WIP
+
+This plugin allows you to switch from any chain to matic chain, with a single click. 
+End Goal: Plugin must automatically switch to matic whenever user is signing a transaction on a DApp. 
