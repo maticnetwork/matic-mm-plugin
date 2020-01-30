@@ -1,0 +1,29 @@
+{
+  "name": "matic-snaps",
+  "version": "1.0.0",
+  "description": "Welcome to Matic!",
+  "main": "index.js",
+  "dependencies": {
+    "eth-json-rpc-errors": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sachin Mittal",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MetaMask/snaps-cli.git"
+  },
+  "web3Wallet": {
+    "bundle": {
+      "local": "dist/bundle.js",
+      "url": "http://localhost:7778/dist/bundle.js"
+    },
+    "initialPermissions": {
+      "alert": {},
+      "updateAndSetCustomRpc": {}
+    }
+  }
+}
