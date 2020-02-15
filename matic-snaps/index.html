@@ -2,70 +2,106 @@
 
 <html>
 
-  </head>
-    <title>RPCSwitcher</title>
-  </head>
+</head>
+<title>Send on Matic</title>
+</head>
 
-  <body>
-    <h1>RPCSwitcher</h1>
-    <details>
-      <summary>Instructions</summary>
+<body>
+  <h1>Send on Matic</h1>
+  <details>
+    <summary>Instructions</summary>
+    <ul>
+      <li>Click "Connect", and then try 'Sending tx on Matic'.</li>
+      <li>Please note that:</li>
       <ul>
-        <li>First, click "Connect". Then, try out the other buttons!</li>
-        <li>Please note that:</li>
-        <ul>
-          <li>
-            The Snap <b>package.json</b> must be located in located in the server root directory
-          </li>
-          <li>
-            The Snap bundle must be hosted at the location specified by <b>package.json:web3Wallet:bundle:url</b>
-          </li>
-        </ul>
+        <li>The button 'Send tx on Matic', switches RPC and sends a sample tx on Matic chain.</li>
+        <li>
+          The Snap <b>package.json</b> must be located in located in the server root directory
+        </li>
+        <li>
+          The Snap bundle must be hosted at the location specified by <b>package.json:web3Wallet:bundle:url</b>
+        </li>
       </ul>
-    </details>
-    <br/>
+    </ul>
+  </details>
+  <br />
 
-    <button class="connect">Connect</button>
-    <button class="sendHello">Switch to Matic</button>
-  </body>
+  <button class="connect">Connect</button>
+  <button class="sendHello">Send tx on Matic</button>
+</body>
+<script src="js/web3.min.js"></script>
+<script>
+  // we identify the Snap by the location of its package.json file
+  const snapId = new URL('package.json', window.location.href).toString()
 
-  <script>
+  const connectButton = document.querySelector('button.connect')
+  const sendButton = document.querySelector('button.sendHello')
 
-    // we identify the Snap by the location of its package.json file
-    const snapId = new URL('package.json', window.location.href).toString()
 
-    const connectButton = document.querySelector('button.connect')
-    const sendButton = document.querySelector('button.sendHello')
-    
+  connectButton.addEventListener('click', connect)
+  sendButton.addEventListener('click', send)
 
-    connectButton.addEventListener('click', connect)
-    sendButton.addEventListener('click', send)
+  // here we get permissions to interact with and install the plugin
+  async function connect() {
+    await ethereum.send({
+      method: 'wallet_enable',
+      params: [{
+        wallet_plugin: { [snapId]: {} },
+      }]
+    })
+  }
 
-    // here we get permissions to interact with and install the plugin
-    async function connect () {
-      await ethereum.send({
-        method: 'wallet_enable',
-        params: [{
-          wallet_plugin: { [snapId]: {} },
+  // here we call the plugin's "hello" method
+  async function send() {
+    try {
+      const response = ethereum.send({
+        method: 'wallet_invokePlugin',
+        params: [snapId, {
+          method: 'RPCSwitcher'
         }]
       })
-    }
-
-    // here we call the plugin's "hello" method
-    async function send () {
-      try {
-        const response = await ethereum.send({
-          method: 'wallet_invokePlugin',
-          params: [snapId, {
-            method: 'RPCSwitcher'
-          }]
+        .then(async function (response) {
+          console.log(response);
+          if (response) {
+            console.log(window.ethereum);
+            if (window.ethereum) {
+              var myprovider = window.ethereum;
+              try {
+                // Request account access
+                await window.ethereum.enable();
+              } catch (error) {
+                // User denied account access...
+                console.error("User denied account access");
+              }
+            }
+            // Legacy dapp browsers...
+            else if (window.web3) {
+              var myprovider = window.web3.currentProvider;
+            }
+            // If no injected web3 instance is detected, fall back to Ganache
+            else {
+              var myprovider = new Web3.providers.HttpProvider('http://testnetv3.matic.network/');
+            }
+            web3 = new Web3(myprovider);
+            web3.eth.getAccounts(function (e, accounts) {
+              console.log(accounts);
+              web3.eth.sendTransaction({
+                from: accounts[0],
+                to: '0x9fB033431c7A9141F5504756f56d5d33514744FF',
+                value: '10000'
+              })
+              .then(function (receipt) {
+                alert('Tranasction sent on Matic with hash', receipt)
+              });
+            })
+          }
         })
-      } catch (err) {
-        console.error(err)
-        alert('Problem happened: ' + err.message || err)
-      }
+    } catch (err) {
+      console.error(err)
+      alert('Problem happened: ' + err.message || err)
     }
+  }
 
-  </script>
+</script>
 
 </html>
