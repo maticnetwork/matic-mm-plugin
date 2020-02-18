@@ -30,13 +30,13 @@
   <button class="sendHello">Send tx on Matic</button>
 </body>
 <script src="js/web3.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 <script>
   // we identify the Snap by the location of its package.json file
   const snapId = new URL('package.json', window.location.href).toString()
 
   const connectButton = document.querySelector('button.connect')
   const sendButton = document.querySelector('button.sendHello')
-
 
   connectButton.addEventListener('click', connect)
   sendButton.addEventListener('click', send)
@@ -84,17 +84,30 @@
               var myprovider = new Web3.providers.HttpProvider('http://testnetv3.matic.network/');
             }
             web3 = new Web3(myprovider);
-            web3.eth.getAccounts(function (e, accounts) {
-              console.log(accounts);
-              web3.eth.sendTransaction({
-                from: accounts[0],
-                to: '0x9fB033431c7A9141F5504756f56d5d33514744FF',
-                value: '10000'
-              })
-              .then(function (receipt) {
-                alert('Tranasction sent on Matic with hash', receipt)
-              });
-            })
+            $(function(){
+                $.getJSON('abi/ChildERC20.json',function(data){
+                    contract = new web3.eth.Contract(data, '0x9a93c912F4eFf0254d178a18ACD980C1B05b57b0'); // test token testnetv3 (facuet.matic.network)
+
+                    web3.eth.getAccounts(function (e, accounts) {
+                      console.log(accounts);
+                      contract.methods.transfer(
+                        '0x9fB29AAc15b9A4B7F17c3385939b007540f4d791',
+                        1000000000000000000
+                      )
+                      .send({
+                        from: accounts[0],
+                        gas: 314150, 
+                        gasPrice: '0x0'
+                      })
+                      .then(function (receipt) {
+                        alert('Tranasction sent on Matic with hash', receipt)
+                      });
+                    })
+
+                  }).error(function(){
+                    console.log('error sending tx');
+                });
+            });
           }
         })
     } catch (err) {
